@@ -7,16 +7,36 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.logseq.file_sync.FileSync;
 
+import java.util.List;
+
 @CapacitorPlugin(name = "GraphFileSync")
 public class GraphFileSync extends Plugin {
 
+    //@PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     @PluginMethod()
     public void watch(PluginCall call) {
         String path = call.getString("path");
-        FileSync.watch(path);
+        android.util.Log.i("FileSync", "path = " + path);
+
+        FileSync.ping();
+        String watched = FileSync.watch(this, path);
+        android.util.Log.i("FileSync", "started");
         JSObject ret = new JSObject();
-        ret.put("path", "watched");
+        ret.put("path", watched);
+
+        // call.setKeepAlive(true);
         call.resolve(ret);
+    }
+
+    public void notifyChange(String event, List<String> paths) {
+        android.util.Log.i("FileSync", "Event:" + event + " path: " + paths);
+        for (String p : paths) {
+            android.util.Log.i("FileSync", "Got path:" + p);
+        }
+        JSObject ret = new JSObject();
+        ret.put("event", event);
+        ret.put("path", paths);
+        notifyListeners(event, ret);
     }
 
     @PluginMethod()

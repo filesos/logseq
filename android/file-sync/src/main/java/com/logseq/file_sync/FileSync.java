@@ -5,7 +5,7 @@ public class FileSync {
         System.loadLibrary("filesync");
     }
 
-    public static native void watch(final String path);
+    public static native String watch(final Object plugin, final String path);
 
     public static native void close();
     public static native String ping();
